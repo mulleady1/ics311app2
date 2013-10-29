@@ -1,0 +1,8 @@
+#!/bin/sh
+
+echo "\nCompiling and running Kyle Mulleady's Graph Project..."
+cd src && \
+javac -d ../bin/ ics311km2/*.java && \
+cd ../bin/ && \
+#java -Xmx1024M ics311km2/Driver ../$1 $2 $3 && \
+cd ..
