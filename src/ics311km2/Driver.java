@@ -14,38 +14,45 @@ public class Driver implements Constants {
 
 	private static Map<String, Object> data = new HashMap<String, Object>();
 	
-	public static void main(String[] args) throws IOException, FileNotFoundException {
-		String filename = args[0];
-		data.put(FILENAME, filename);
-		Graph g = new Graph();
-		BufferedReader br = new BufferedReader(new FileReader(filename));
-		// Skip first two lines.
-		br.readLine();
-		br.readLine();
-		String line;
-		boolean readVertices = true;
-		int k = 0;
-		while ((line = br.readLine()) != null) {
-			// If line begins with an asterisk, start reading edges.
-			if (line.charAt(0) == '*') {
-				readVertices = false;
-				line = br.readLine();
-				line = br.readLine();
+	public static void main(String[] args) {
+		loadGraph(args[0]);
+	}
+
+	private static void loadGraph(String filename) {
+		try {
+			data.put(FILENAME, filename);
+			Graph g = new Graph();
+			BufferedReader br = new BufferedReader(new FileReader(filename));
+			// Skip first two lines.
+			br.readLine();
+			br.readLine();
+			String line;
+			boolean readVertices = true;
+			int k = 0;
+			while ((line = br.readLine()) != null) {
+				// If line begins with an asterisk, start reading edges.
+				if (line.charAt(0) == '*') {
+					readVertices = false;
+					line = br.readLine();
+					line = br.readLine();
+				}
+				if (readVertices) {
+					// Insert a vertex.
+					g.insertVertex(line.trim(), k++);
+				}
+				else {
+					// Insert an arc.
+					String[] tokens = line.trim().split(" ");
+					Vertex u = g.getVertex(tokens[0]);
+					Vertex v = g.getVertex(tokens[1]);
+					g.insertArc(u, v, String.valueOf(u.getData())+"/"+String.valueOf(v.getData()));
+				}
 			}
-			if (readVertices) {
-				// Insert a vertex.
-				g.insertVertex(line.trim(), k++);
-			}
-			else {
-				// Insert an arc.
-				String[] tokens = line.trim().split(" ");
-				Vertex u = g.getVertex(tokens[0]);
-				Vertex v = g.getVertex(tokens[1]);
-				g.insertArc(u, v, String.valueOf(u.getData())+"/"+String.valueOf(v.getData()));
-			}
-		}
-		analyzeGraph(g);
-		br.close();
+			analyzeGraph(g);
+			br.close();
+		} catch(IOException e) {
+			e.printStackTrace();
+		} 
 	}
 	
 	private static void analyzeGraph(Graph g) {
