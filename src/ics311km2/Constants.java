@@ -11,4 +11,12 @@ public interface Constants {
 	static final String FILENAME = "FILENAME";
 	static final String NUM_SCC  = "NUM_SCC";
 	static final String PERCENT  = "PERCENT";
+	static final String PARENT   = "PARENT";
+	static final String COLOR    = "COLOR";
+	static final String WHITE    = "WHITE";
+	static final String BLACK    = "BLACK";
+	static final String GRAY     = "GRAY";
+	static final String NIL      = "NIL";
+	static final String SCC      = "SCC";
+	static final String D        = "D";
 }

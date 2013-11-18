@@ -1,7 +1,6 @@
 package ics311km2;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -59,6 +58,7 @@ public class Driver implements Constants {
 	private static void analyzeGraph(Graph g) {
 		computeDegree(g);
 		computeDensity(g);
+		//computeSCC(g);
 		printData(g);
 	}
 	
@@ -97,6 +97,39 @@ public class Driver implements Constants {
 	
 	private static void computeDensity(Graph g) {
 		data.put(DENSITY, ((double)g.numArcs() / (g.numVertices() * (g.numVertices() - 1))));
+	}
+	
+	private static void computeSCC(Graph g) {
+		dfs(g);
+	}
+	
+	private static int time = 0, scc = 0;
+	private static void dfs(Graph g) {
+		Iterator<Vertex> i = g.vertices();
+		while (i.hasNext()) {
+			Vertex u = i.next();
+			g.setAnnotation(u, COLOR, WHITE);
+			g.setAnnotation(u, PARENT, NIL);
+		}
+		i = g.vertices();
+		while (i.hasNext()) {
+			Vertex u = i.next();
+			if (g.getAnnotation(u, COLOR).equals(WHITE)) {
+				scc++;
+				dfsVisit(g, u);
+			}
+		}
+	}
+	
+	private static void dfsVisit(Graph g, Vertex u) {
+		time++;
+		g.setAnnotation(u, D, time);
+		g.setAnnotation(u, COLOR, GRAY);
+		g.setAnnotation(u, SCC, scc);
+		Iterator<Vertex> i = u.inAdjacentVertices();
+		// ...
+		i = u.outAdjacentVertices();
+		// ...
 	}
 
 	private static void printData(Graph g) {
