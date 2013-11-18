@@ -139,4 +139,19 @@ public class GraphTest {
 		g.reverseDirection(a);
 		assertEquals(g.origin(a).getData(), v.getData());
 	}
+	
+	@Test
+	public void testClearAnnotations() {
+		Graph g = new Graph();
+        Vertex v = g.insertVertex("v");
+        Vertex u = g.insertVertex("u");
+        Vertex w = g.insertVertex("w");
+        Vertex x = g.insertVertex("x");
+        g.setAnnotation(v, "a", "1");
+        g.setAnnotation(u, "b", "2");
+        g.setAnnotation(w, "c", "3");
+        g.setAnnotation(x, "d", "4");
+        g.clearAnnotations("a");
+        assertNull(g.getAnnotation(v, "a"));
+	}
 }

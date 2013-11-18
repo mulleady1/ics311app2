@@ -8,50 +8,75 @@ import java.util.Map;
 
 public class Graph {
 
-	// vertices maps a data object to a vertex object.
+	// Maps a data object to a vertex object.
     private Map<Object, Vertex> vertices;
     
-    // arcs maps a list of 2 vertices to an arc object.
+    // Maps a list of 2 vertices to an arc object.
     private Map<List<Vertex>, Arc> arcs;
     
-    // vertexAnnotations maps a vertex object to a map that, in turn, maps a key to a value.
+    // Maps a vertex object to a map that, in turn, maps a key to a value.
     private Map<Vertex, Map<Object, Object>> vertexAnnotations;
     
-    // arcAnnotations maps an arc object to a map that, in turn, maps a key to a value.
+    // Maps an arc object to a map that, in turn, maps a key to a value.
     private Map<Arc, Map<Object, Object>> arcAnnotations;
 
     public Graph() {
         this.vertices = new HashMap<Object, Vertex>();
         this.arcs = new HashMap<List<Vertex>, Arc>();
+        this.vertexAnnotations = new HashMap<Vertex, Map<Object, Object>>();
+        this.arcAnnotations = new HashMap<Arc, Map<Object, Object>>();
     }
 
-    public int numVertices() { return this.vertices.size(); }
-    public int numArcs() { return this.arcs.size(); }
-    public Iterator<Vertex> vertices() { return this.vertices.values().iterator(); }
-    public Iterator<Arc> arcs() { return this.arcs.values().iterator(); }
-    
-    public Vertex getVertex(Object key) { return this.vertices.get(key); }
+    public int numVertices() { 
+    	return this.vertices.size(); 
+    }
+    public int numArcs() { 
+    	return this.arcs.size(); 
+    }
+    public Iterator<Vertex> vertices() { 
+    	return this.vertices.values().iterator(); 
+    }
+    public Iterator<Arc> arcs() { 
+    	return this.arcs.values().iterator(); 
+    }
+    public Vertex getVertex(Object key) { 
+    	return this.vertices.get(key); 
+    }
     public Arc getArc(Object source, Object target) {
-    	List<Vertex> vertices = new ArrayList<Vertex>();
+    	List<Vertex> vertices = new ArrayList<Vertex>(2);
     	vertices.add((Vertex)source);
     	vertices.add((Vertex)target);
     	return this.arcs.get(vertices); 
     }
-    public Object getVertexData(Vertex v) { return v.getData(); }
-    public Object getArcData(Arc a) { return a.getData(); }
-    public int inDegree(Vertex v) { return v.inDegree(); }
-    public int outDegree(Vertex v) { return v.outDegree(); }
-    public Iterator<Vertex> inAdjacentVertices(Vertex v) { return v.inAdjacentVertices(); }
-    public Iterator<Vertex> outAdjacentVertices(Vertex v) { return v.outAdjacentVertices(); }
-    public Vertex origin(Arc a) { return a.getOrigin(); }
-    public Vertex destination(Arc a) { return a.getDestination(); }
-    
+    public Object getVertexData(Vertex v) { 
+    	return v.getData(); 
+    }
+    public Object getArcData(Arc a) { 
+    	return a.getData(); 
+    }
+    public int inDegree(Vertex v) { 
+    	return v.inDegree();
+    }
+    public int outDegree(Vertex v) { 
+    	return v.outDegree(); 
+    }
+    public Iterator<Vertex> inAdjacentVertices(Vertex v) { 
+    	return v.inAdjacentVertices(); 
+    }
+    public Iterator<Vertex> outAdjacentVertices(Vertex v) { 
+    	return v.outAdjacentVertices(); 
+    }
+    public Vertex origin(Arc a) { 
+    	return a.getOrigin(); 
+    }
+    public Vertex destination(Arc a) { 
+    	return a.getDestination(); 
+    }
     public Vertex insertVertex(Object key) { 
         Vertex v = new Vertex();
         this.vertices.put(key, v);
         return v;
     }
-
     public Vertex insertVertex(Object key, Object data) {
         Vertex v = this.insertVertex(key);
         v.setData(data);
@@ -60,7 +85,7 @@ public class Graph {
 
     public Arc insertArc(Vertex u, Vertex v) { 
         Arc a = new Arc();
-        List<Vertex> vertices = new ArrayList<Vertex>();
+        List<Vertex> vertices = new ArrayList<Vertex>(2);
     	vertices.add(u);
     	vertices.add(v);
     	this.arcs.put(vertices, a);
@@ -77,8 +102,12 @@ public class Graph {
     	a.setData(data);
         return a;
     }
-    public void setVertexData(Vertex v, Object data) { v.setData(data); }
-    public void setArcData(Arc a, Object data) { a.setData(data); }
+    public void setVertexData(Vertex v, Object data) { 
+    	v.setData(data); 
+    }
+    public void setArcData(Arc a, Object data) { 
+    	a.setData(data); 
+    }
     public Object removeVertex(Vertex v) {
     	// Iterate over the set of vertices in the graph.
     	Iterator<Vertex> vertices = this.vertices();
@@ -161,13 +190,48 @@ public class Graph {
     	Object o = this.removeArc(a);
     	this.insertArc(v, u, o);
     }
-
-    public void setAnnotation(Vertex v, Object k, Object o) { }
-    public void setAnnotation(Arc a, Object k, Object o) { } 
-    public Object getAnnotation(Vertex v, Object k) { return null; } 
-    public Object getAnnotation(Arc a, Object k) { return null; } 
-    public Object removeAnnotation(Vertex v, Object k) { return null; }
-    public Object removeAnnotation(Arc a, Object k) { return null; }
-    public void clearAnnotations(Object k) { }
-
+    public void setAnnotation(Vertex v, Object k, Object o) {
+    	Map<Object, Object> map = new HashMap<Object, Object>();
+    	map.put(k, o);
+    	this.vertexAnnotations.put(v, map);
+    }
+    public void setAnnotation(Arc a, Object k, Object o) {
+    	Map<Object, Object> map = new HashMap<Object, Object>();
+    	map.put(k, o);
+    	this.arcAnnotations.put(a, map);
+    } 
+    public Object getAnnotation(Vertex v, Object k) { 
+    	return this.vertexAnnotations.get(v).get(k); 
+    } 
+    public Object getAnnotation(Arc a, Object k) { 
+    	return this.arcAnnotations.get(a).get(k); 
+    } 
+    public Object removeAnnotation(Vertex v, Object k) {
+    	Object o = this.vertexAnnotations.get(v).get(k); 
+    	this.vertexAnnotations.get(v).remove(k);
+    	return o;
+    }
+    public Object removeAnnotation(Arc a, Object k) { 
+    	Object o = this.vertexAnnotations.get(a).get(k); 
+    	this.vertexAnnotations.get(a).remove(k);
+    	return o;
+    }
+    public void clearAnnotations(Object k) {
+    	// Iterate over arcAnnotations.
+    	for (Arc a : this.arcAnnotations.keySet()) {
+    		// In arcAnnotations, arc a has a set of keys. Check for k in the set of keys.
+    		if (this.arcAnnotations.get(a).keySet().contains(k)) {
+    			// If found, remove it.
+    			this.arcAnnotations.get(a).remove(k);
+    		}
+    	}
+    	// Iterate over vertexAnnotations.
+    	for (Vertex v : this.vertexAnnotations.keySet()) {
+    		// In vertexAnnotations, arc a has a set of keys. Check for k in the set of keys.
+    		if (this.vertexAnnotations.get(v).keySet().contains(k)) {
+    			// If found, remove it.
+    			this.vertexAnnotations.get(v).remove(k);
+    		}
+    	}
+    }
 }

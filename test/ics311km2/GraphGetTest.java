@@ -40,5 +40,25 @@ public class GraphGetTest {
         Vertex v = g.insertVertex(key, data);
         assertEquals(v, g.getVertex(key));
 	}
+	
+	@Test
+	public void testGetArcAnnotation() {
+		Graph g = new Graph();
+		String key = "key", value = "value";
+        Vertex v = g.insertVertex("v");
+        Vertex u = g.insertVertex("u");
+        Arc a = g.insertArc(u, v);
+        g.setAnnotation(a, key, value);
+        assertEquals(g.getAnnotation(a, key), value);
+	}
+
+	@Test
+	public void testGetVertexAnnotation() {
+		Graph g = new Graph();
+		String key = "key", value = "value";
+        Vertex v = g.insertVertex("v");
+        g.setAnnotation(v, key, value);
+        assertEquals(g.getAnnotation(v, key), value);
+	}
 
 }
