@@ -15,20 +15,20 @@ public class Driver implements Constants {
 	private static Map<String, Object> data = new HashMap<String, Object>();
 	
 	public static void main(String[] args) {
-		loadGraph(args[0]);
+		Graph g = loadGraph(args[0]);
+		analyzeGraph(g);
 	}
 
-	private static void loadGraph(String filename) {
+	private static Graph loadGraph(String filename) {
+		Graph g = new Graph();
+		data.put(FILENAME, filename);
 		try {
-			data.put(FILENAME, filename);
-			Graph g = new Graph();
 			BufferedReader br = new BufferedReader(new FileReader(filename));
 			// Skip first two lines.
 			br.readLine();
 			br.readLine();
 			String line;
 			boolean readVertices = true;
-			int k = 0;
 			while ((line = br.readLine()) != null) {
 				// If line begins with an asterisk, start reading edges.
 				if (line.charAt(0) == '*') {
@@ -38,7 +38,7 @@ public class Driver implements Constants {
 				}
 				if (readVertices) {
 					// Insert a vertex.
-					g.insertVertex(line.trim(), k++);
+					g.insertVertex(line.trim());
 				}
 				else {
 					// Insert an arc.
@@ -48,11 +48,12 @@ public class Driver implements Constants {
 					g.insertArc(u, v, String.valueOf(u.getData())+"/"+String.valueOf(v.getData()));
 				}
 			}
-			analyzeGraph(g);
 			br.close();
 		} catch(IOException e) {
-			e.printStackTrace();
+			log("IO Error. Terminating app.");
+			System.exit(1);
 		} 
+		return g;
 	}
 	
 	private static void analyzeGraph(Graph g) {
