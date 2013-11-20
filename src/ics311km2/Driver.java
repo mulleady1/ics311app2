@@ -14,6 +14,10 @@ public class Driver implements Constants {
 	private static Map<String, Object> data = new HashMap<String, Object>();
 	
 	public static void main(String[] args) {
+        if (args.length != 1) {
+            log("Usage: java ics311km2/Driver <vna_file>");
+            System.exit(1);
+        }
 		Graph g = loadGraph(args[0]);
 		analyzeGraph(g);
 	}
