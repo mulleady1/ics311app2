@@ -43,14 +43,25 @@ public class Driver implements Constants {
 				}
 				if (readVertices) {
 					// Insert a vertex.
-					g.insertVertex(line.trim());
+					String[] tokens = line.split("\\s+");
+					if (tokens.length == 1) {
+						g.insertVertex(tokens[0].trim());
+					}
+					else if (tokens.length > 1) {
+						g.insertVertex(tokens[0], tokens[1].trim());
+					}
 				}
 				else {
 					// Insert an arc.
-					String[] tokens = line.trim().split(" ");
-					Vertex u = g.getVertex(tokens[0]);
-					Vertex v = g.getVertex(tokens[1]);
-					g.insertArc(u, v);
+					String[] tokens = line.split("\\s+");
+					Vertex u = g.getVertex(tokens[0].trim());
+					Vertex v = g.getVertex(tokens[1].trim());
+					if (tokens.length == 2) {
+						g.insertArc(u, v);
+					}
+					else if (tokens.length > 2) {
+						g.insertArc(u, v, tokens[2].trim());
+					}
 				}
 			}
 			br.close();
@@ -207,11 +218,11 @@ public class Driver implements Constants {
 		log("Degree distribution: minimum  average  maximum");
 		log("  inDegree            "
 				+ data.get(IN_DEGREE_MIN) + "        "
-				+ data.get(IN_DEGREE_AVE) + "        "
+				+ data.get(IN_DEGREE_AVE) + "     "
 				+ data.get(IN_DEGREE_MAX));
 		log("  outDegree           "
 				+ data.get(OUT_DEGREE_MIN) + "        "
-				+ data.get(OUT_DEGREE_AVE) + "        "
+				+ data.get(OUT_DEGREE_AVE) + "     "
 				+ data.get(OUT_DEGREE_MAX));
 		log("Number of Strongly Connected Components: " + scc);
 		log("Percent Vertices in Largest Strongly Connected Component: " + data.get(PERCENT_IN_LARGEST_SCC));
