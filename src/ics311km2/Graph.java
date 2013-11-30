@@ -16,7 +16,6 @@ public class Graph {
     
     // Maps a vertex object to a map that, in turn, maps a key to a value.
     private Map<Vertex, Map<Object, Object>> vertexAnnotations;
-    
     // Maps an arc object to a map that, in turn, maps a key to a value.
     private Map<Arc, Map<Object, Object>> arcAnnotations;
 
@@ -75,6 +74,9 @@ public class Graph {
     public Vertex insertVertex(Object key) { 
         Vertex v = new Vertex();
         this.vertices.put(key, v);
+        // Create vertexAnnotations inner map.
+        Map<Object, Object> map = new HashMap<Object, Object>();
+        this.vertexAnnotations.put(v, map);
         return v;
     }
     public Vertex insertVertex(Object key, Object data) {
@@ -95,6 +97,9 @@ public class Graph {
         // Add to in/out adjacent vertices.
         u.addOutAdjacentVertex(v);
         v.addInAdjacentVertex(u);
+        // Create arcAnnotations inner map.
+        Map<Object, Object> map = new HashMap<Object, Object>();
+        this.arcAnnotations.put(a, map);
         return a;
     }
     public Arc insertArc(Vertex u, Vertex v, Object data) { 
@@ -135,6 +140,8 @@ public class Graph {
     			this.removeIncidentEdges(v);
     			// Remove v from the set of vertices in the graph.
     			vertices.remove();
+    			// Remove any annotations on v.
+    			this.vertexAnnotations.remove(v);
     			// Return client data.
     			return v.getData();
     		}
@@ -177,6 +184,8 @@ public class Graph {
     		if (a.equals(arc)) {
     			// Remove the arc of interest.
     			arcs.remove();
+    			// Remove any annotations on a.
+    			this.arcAnnotations.remove(a);
     			// Return client data.
     			return a.getData();
     		}
@@ -185,20 +194,22 @@ public class Graph {
     	return null; 
     }
     public void reverseDirection(Arc a) {
-    	Vertex u = a.getDestination();
-    	Vertex v = a.getOrigin();
-    	Object o = this.removeArc(a);
-    	this.insertArc(v, u, o);
+    	Vertex u = a.getOrigin();
+    	Vertex v = a.getDestination();
+    	u.removeOutAdjacentVertex(v);
+    	u.addInAdjacentVertex(v);
+    	v.removeInAdjacentVertex(u);
+    	v.addOutAdjacentVertex(u);
+    	a.setOrigin(v);
+    	a.setDestination(u);
     }
     public void setAnnotation(Vertex v, Object k, Object o) {
-    	Map<Object, Object> map = new HashMap<Object, Object>();
+    	Map<Object, Object> map = this.vertexAnnotations.get(v);
     	map.put(k, o);
-    	this.vertexAnnotations.put(v, map);
     }
     public void setAnnotation(Arc a, Object k, Object o) {
-    	Map<Object, Object> map = new HashMap<Object, Object>();
+    	Map<Object, Object> map = this.arcAnnotations.get(a);
     	map.put(k, o);
-    	this.arcAnnotations.put(a, map);
     } 
     public Object getAnnotation(Vertex v, Object k) { 
     	return this.vertexAnnotations.get(v).get(k); 

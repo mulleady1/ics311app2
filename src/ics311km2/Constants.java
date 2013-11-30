@@ -19,4 +19,6 @@ public interface Constants {
 	static final String NIL      = "NIL";
 	static final String SCC      = "SCC";
 	static final String D        = "D";
+	static final String F        = "F";
+	static final String PERCENT_IN_LARGEST_SCC = "PERCENT_IN_LARGEST_SCC";
 }
