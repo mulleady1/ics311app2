@@ -21,4 +21,7 @@ public interface Constants {
 	static final String D        = "D";
 	static final String F        = "F";
 	static final String PERCENT_IN_LARGEST_SCC = "PERCENT_IN_LARGEST_SCC";
+	static final String ADDITIONAL_SCC_DATA    = "ADDITIONAL_SCC_DATA";
+	static final String SEP  = "---------------------------------------------------------------";
+	static final String SEP2 = "===============================================================";
 }

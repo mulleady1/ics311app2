@@ -5,23 +5,28 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Driver implements Constants {
 
-	private static Map<String, Object> data = new HashMap<String, Object>();
+	private static Map<String, Object> data;
 	
 	public static void main(String[] args) {
-        if (args.length != 1) {
-            log("Usage: java ics311km2/Driver <vna_file>");
+        if (args.length < 1) {
+            log("Usage: java ics311km2/Driver <vna_file> [<vna_file> ...]");
             System.exit(1);
         }
-		Graph g = loadGraph(args[0]);
-		analyzeGraph(g);
+        for (String filename : args) {
+        	data = new HashMap<String, Object>();
+			Graph g = loadGraph(filename);
+			analyzeGraph(g);
+        }
 	}
 
 	static Graph loadGraph(String filename) {
@@ -45,7 +50,7 @@ public class Driver implements Constants {
 					// Insert a vertex.
 					String[] tokens = line.split("\\s+");
 					if (tokens.length == 1) {
-						g.insertVertex(tokens[0].trim());
+						g.insertVertex(tokens[0].trim(), tokens[0].trim());
 					}
 					else if (tokens.length > 1) {
 						g.insertVertex(tokens[0], tokens[1].trim());
@@ -56,17 +61,19 @@ public class Driver implements Constants {
 					String[] tokens = line.split("\\s+");
 					Vertex u = g.getVertex(tokens[0].trim());
 					Vertex v = g.getVertex(tokens[1].trim());
-					if (tokens.length == 2) {
-						g.insertArc(u, v);
-					}
-					else if (tokens.length > 2) {
-						g.insertArc(u, v, tokens[2].trim());
+					if (u != null && v != null) {
+						if (tokens.length == 2) {
+							g.insertArc(u, v);
+						}
+						else if (tokens.length > 2) {
+							g.insertArc(u, v, tokens[2].trim());
+						}
 					}
 				}
 			}
 			br.close();
 		} catch(IOException e) {
-			log("IO Error. Terminating app.");
+			log("IO Error: " + e.getMessage());
 			System.exit(1);
 		} 
 		return g;
@@ -76,6 +83,9 @@ public class Driver implements Constants {
 		computeDegree(g);
 		computeDensity(g);
 		computeSCC(g);
+		if (g.numVertices() < 500) {
+			computeAdditionalSCCData(g);
+		}
 		printData(g);
 	}
 	
@@ -206,12 +216,57 @@ public class Driver implements Constants {
 		}
 	}
 
+	private static void computeAdditionalSCCData(Graph g) {
+		Map<Integer, List<String>> verticesBySCC = new HashMap<Integer, List<String>>();
+		Iterator<Vertex> i = g.vertices();
+		while (i.hasNext()) {
+			Vertex v = i.next();
+			// Get the list of vertices in verticesBySCC.
+			int sccNumber = (int)g.getAnnotation(v, SCC);
+			List<String> vertexList = verticesBySCC.get(sccNumber);
+			// If the list is null, start one.
+			if (vertexList == null) {
+				vertexList = new ArrayList<String>();
+				vertexList.add((String)v.getData());
+				// Map v's scc annotation to its data value.
+				verticesBySCC.put(sccNumber, vertexList);
+			}
+			// If the list is not null, append v to it.
+			else {
+				vertexList.add((String)v.getData());
+				verticesBySCC.put(sccNumber, vertexList);
+			}
+		}
+		// Iterate over verticesBySCC, sort them into decreasing order by size.
+		List<List<String>> rows = new ArrayList<List<String>>();
+		Set<Integer> verticesBySCCKeys = verticesBySCC.keySet();
+		Iterator<Integer> j = verticesBySCCKeys.iterator();
+		while (j.hasNext()) {
+			int k = j.next();
+			List<String> row = verticesBySCC.get(k);
+			// Start at the front, checking sizes to see where 'row' belongs.
+			for (int index = 0; index < rows.size(); index++) {
+				if (row.size() > rows.get(index).size()) {
+					rows.add(index, row);
+					break;
+				}
+				if (index == rows.size()-1) {
+					rows.add(row);
+					break;
+				}
+			}
+			if (rows.size() == 0) {
+				rows.add(row);
+			}
+		}
+		data.put(ADDITIONAL_SCC_DATA, rows);
+	}
+
 	private static void printData(Graph g) {
 		NumberFormat fmt = new DecimalFormat("#.####");
-		String sep = "------------------------------------------------------------";
-		log(sep);
+		log(SEP);
 		log("Graph " + data.get(FILENAME));
-		log(sep);
+		log(SEP);
 		log("|V| = " + g.numVertices());
 		log("|A| = " + g.numArcs());
 		log("Density: " + fmt.format(data.get(DENSITY)));
@@ -227,9 +282,29 @@ public class Driver implements Constants {
 		log("Number of Strongly Connected Components: " + scc);
 		log("Percent Vertices in Largest Strongly Connected Component: " + data.get(PERCENT_IN_LARGEST_SCC));
 		
+		if (data.get(ADDITIONAL_SCC_DATA) != null) {
+			log("    SCC  Size  Members");
+			@SuppressWarnings("unchecked")
+			List<List<String>> rows = (List<List<String>>) data.get(ADDITIONAL_SCC_DATA);
+			for (int i = 0; i < rows.size(); i++) {
+				int num = i + 1;
+				int size = rows.get(i).size();
+				String members = rows.get(i).toString();
+				log("    " + prettyPrint(num, 2) + "   " + prettyPrint(size, 3) + "    " + members);
+			}
+		}
+		log(SEP2 + "\n");
 		data.clear();
 	}
 	
+	private static String prettyPrint(int number, int numSpaces) {
+		String s = String.valueOf(number);
+		while (s.length() < numSpaces) {
+			s = " " + s;
+		}
+		return s;
+	}
+
 	private static void log(Object o) {
 		System.out.println(String.valueOf(o));
 	}
