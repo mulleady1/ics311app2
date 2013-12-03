@@ -1,0 +1,17 @@
+File:   testing.txt
+Author: Kyle Mulleady
+
+Program Correctness
+-------------------
+I used JUnit to verify the correctness of my project. I have ~25 unit tests
+that demonstrate the proper working of my implementations of graph functions:
+inserting arcs/vertices, annotating graph elements, reversing arcs, removing 
+arcs/vertices, etc.
+
+I verified the results of my graph by checking them against the graphs in the
+project description page. All metrics from my graphs matched those of the 
+sample graphs.
+
+Graph Results
+-------------
+Graph results can be seen in output.txt.

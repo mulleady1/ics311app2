@@ -222,7 +222,7 @@ public class Driver implements Constants {
 		while (i.hasNext()) {
 			Vertex v = i.next();
 			// Get the list of vertices in verticesBySCC.
-			int sccNumber = (int)g.getAnnotation(v, SCC);
+			int sccNumber = (Integer)g.getAnnotation(v, SCC);
 			List<String> vertexList = verticesBySCC.get(sccNumber);
 			// If the list is null, start one.
 			if (vertexList == null) {
